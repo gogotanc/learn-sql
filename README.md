@@ -158,6 +158,57 @@ WHERE prod_price IS NULL;
 
 用来联结或者改变 WHERE 子句中的子句的关键字，也称为逻辑操作符（logical operator）。
 
+AND 操作符
 
+用在 WHERE 子句中的关键字，用来指示检索满足所有给定条件的行。
 
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+WHERE vend_id = 'DLL01' AND prod_price <= 4;
+```
 
+OR 操作符
+
+WHERE 子句中使用的关键字，用来标识检索匹配任一给定条件的行。
+
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+WHERE vend_id = 'DLL01' OR prod_price <= 4;
+```
+
+求值顺序
+
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+WHERE vend_id = 'DLL01' OR vend_id = 'DLL01'
+      AND prod_price <= 4
+-- SQL 在处理 OR 操作符前，优先处理 AND 操作符。
+-- 对于这种操作，最好在 WHERE 子句中使用圆括号来消除歧义。
+```
+
+IN 操作符
+
+WHERE 子句中用来指定要匹配值的清单的关键字，功能与 OR 相当。
+
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+WHERE vend_id IN ('DLL01', 'BRS01')
+ORDER BY prod_name;
+-- IN 的最大优点是可以包含其他 SELECT 语句。
+```
+
+NOT 操作符
+
+WHERE 子句中用来否定其后条件的关键字。
+
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+WHERE NOT vend_id = 'DLL01';
+```
+
+## 第六课 使用通配符进行过滤
