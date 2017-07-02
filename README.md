@@ -1,3 +1,5 @@
+[TOC]
+
 # SQL 必知必会
 
 最近在看这本书，这个仓库用来存放笔记。这里只是重点关注 MYSQL 数据库，其他数据库先不管。
@@ -212,3 +214,71 @@ WHERE NOT vend_id = 'DLL01';
 ```
 
 ## 第六课 使用通配符进行过滤
+
+通配符（wildcard）
+
+用来匹配值的一部分的特殊字符。
+
+搜索模式（search pattern）
+
+由字面值、通配符或者两者组合构成的搜索条件。
+
+谓词（pardicate）
+
+操作符何时不是操作符？答案是，它作为谓词时。从技术上来说，LIKE 是谓词而不是操作符。
+
+```sql
+-- 百分号(%)通配符
+SELECT prod_id, prod_name
+FROM Products
+WHERE prod_name LIKE 'Fish%';
+-- 百分号(%)通配符能够匹配 0 个、1 个或者多个字符。
+-- MYSQL 默认是不区分大小写的，这里 'fish%' 可以得到同样的结果。
+-- 注意 NULL，'%' 不会匹配 NULL 的行。
+
+-- 下划线(_)通配符
+SELECT prod_id, prod_name
+FROM Products
+WHERE prod_name LIKE '__ inch teddy bear';
+-- 下划线(_)通配符总是刚好匹配一个字符
+
+-- 方括号([])通配符
+SELECT cust_contact
+FROM Customers
+WHERE cust_contact LIKE '[JM]%'
+ORDER BY cust_contact;
+-- [JM]匹配方括号中任意一个字符
+-- MYSQL 不支持这个操作符
+
+-- 技巧
+-- 不要过度使用通配符
+-- 把通配符置于开始处，搜索起来是最慢的
+-- 仔细注意通配符的位置
+
+```
+
+## 第七课 创建计算字段
+
+字段（field）
+
+基本上与列（column）的意思相同，经常互换使用，不过数据库列一般称为列，而术语字段通常与计算字段一起使用。
+
+拼接（concatenate）
+
+将值联结到一起（将一个值附加到另一个值）构成单个值。
+
+```sql
+-- 加号(+)或者两个竖杠(||)
+-- MYSQL 不支持这两个操作符，需要使用特殊函数实现
+SELECT vend_name + '(' + vend_country + ')'
+FROM Vendors
+ORDER BY vend_name;
+
+-- MYSQL 中需要使用 concat 函数实现
+SELECT concat(vend_name, '(', vend_country, ')')
+FROM Vendors
+ORDER BY vend_name;
+
+-- 
+```
+
