@@ -160,54 +160,33 @@ WHERE prod_price IS NULL;
 
 用来联结或者改变 WHERE 子句中的子句的关键字，也称为逻辑操作符（logical operator）。
 
-AND 操作符
-
-用在 WHERE 子句中的关键字，用来指示检索满足所有给定条件的行。
-
 ```sql
+-- AND 操作符
 SELECT prod_id, prod_price, prod_name
 FROM Products
 WHERE vend_id = 'DLL01' AND prod_price <= 4;
-```
 
-OR 操作符
-
-WHERE 子句中使用的关键字，用来标识检索匹配任一给定条件的行。
-
-```sql
+-- OR 操作符
 SELECT prod_id, prod_price, prod_name
 FROM Products
 WHERE vend_id = 'DLL01' OR prod_price <= 4;
-```
 
-求值顺序
-
-```sql
+-- 求值顺序
 SELECT prod_id, prod_price, prod_name
 FROM Products
 WHERE vend_id = 'DLL01' OR vend_id = 'DLL01'
       AND prod_price <= 4
 -- SQL 在处理 OR 操作符前，优先处理 AND 操作符。
 -- 对于这种操作，最好在 WHERE 子句中使用圆括号来消除歧义。
-```
 
-IN 操作符
-
-WHERE 子句中用来指定要匹配值的清单的关键字，功能与 OR 相当。
-
-```sql
+-- IN 操作符
 SELECT prod_id, prod_price, prod_name
 FROM Products
 WHERE vend_id IN ('DLL01', 'BRS01')
 ORDER BY prod_name;
 -- IN 的最大优点是可以包含其他 SELECT 语句。
-```
 
-NOT 操作符
-
-WHERE 子句中用来否定其后条件的关键字。
-
-```sql
+-- NOT 操作符
 SELECT prod_id, prod_price, prod_name
 FROM Products
 WHERE NOT vend_id = 'DLL01';
@@ -279,6 +258,99 @@ SELECT concat(vend_name, '(', vend_country, ')')
 FROM Vendors
 ORDER BY vend_name;
 
--- 
+-- 使用别名(alias)
+SELECT concat(vend_name, '(', vend_country, ')') AS vend_title
+FROM Vendors
+ORDER BY vend_name;
+-- 别名常见的用途包括在实际的表列名中包含不合法的字符(如空格)时重新命名它，在原来的名字含混或者容易误解时扩充它
+
+-- 执行算术计算
+SELECT prod_id, quantity, item_price, quantity * item_price AS expanded_price
+FROM OrderItems
+WHERE order_num = 20008;
+
+-- 返回当前时间
+SELECT now();
 ```
 
+## 第八课 使用函数处理数据
+
+函数
+
+SQL 也是可以使用函数来处理数据的，不同 DBMS 都有特定的函数，很多函数是不可移植的。
+
+可移植性（protable）
+
+所编写的代码可以在多个系统上运行。
+
+```sql
+-- 文本处理函数
+-- UPPER() 将字符串转换为大写
+SELECT vend_name, UPPER(vend_name) AS vend_name_upcase
+FROM Vendors
+ORDER BY vend_name;
+
+-- 日期和时间处理函数(移植性最差)
+-- YEAR() 获取年份
+SELECT order_num
+FROM Orders
+WHERE YEAR(order_date) = 2012;
+
+-- 数值处理函数(最一致、最统一)
+-- ABS() 绝对值
+-- PI() 圆周率
+SELECT PI();
+```
+
+## 第九课 汇总数据
+
+聚集函数（aggregate function）
+
+对某些行运行的函数，计算并返回一个值。
+
+```sql
+-- AVG() 函数
+SELECT AVG(prod_price) AS avg_price
+FROM Products;
+-- 只用于单列
+-- 会忽略 NULL
+
+-- COUNT() 函数
+SELECT COUNT(*) AS num_count
+FROM Customers;
+-- 结果为 5
+
+SELECT COUNT(cust_email) AS num_count
+FROM Customers;
+-- 结果为 3
+-- COUNT() 会忽略指定列的值为空的行，但是使用星号则不会忽略。
+
+-- MAX() 函数
+SELECT MAX(prod_price) AS max_price
+FROM Products;
+-- 非数值数据，返回该列排序后的最后一行
+-- 忽略 NULL
+
+-- MIN() 函数
+SELECT MIN(prod_price) AS min_price
+FROM Products;
+-- 非数值数据，返回该列排序后的最前面的一行
+-- 忽略 NULL
+
+-- SUM() 函数
+SELECT SUM(quantity) AS items_ordered
+FROM OrderItems
+WHERE order_num = 20005;
+-- 忽略 NULL
+
+-- 组合聚集函数
+SELECT COUNT(*) AS num_items,
+       MIN(prod_price) AS price_min,
+       MAX(prod_price) AS price_max,
+       AVG(prod_price) AS price_avg
+FROM Products;
+```
+
+## 第十课 分组数据
+
+GROUP BY 子句和 HAVING 子句
