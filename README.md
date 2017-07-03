@@ -1,8 +1,24 @@
-[TOC]
+
 
 # SQL 必知必会
 
-最近在看这本书，这个仓库用来存放笔记。这里只是重点关注 MYSQL 数据库，其他数据库先不管。
+最近在看[这本书](https://book.douban.com/subject/24250054/)，这个仓库用来存放笔记。
+
+具体使用的 DBMS 为 MYSQL，其他的先不关注，结构和数据放在 [create.sql](https://github.com/gogotanc/learn-sql/blob/master/create.sql) 和 [populate.sql](https://github.com/gogotanc/learn-sql/blob/master/populate.sql)。
+
+## 目录
+
+- [第一课 了解 SQL](#user-cotent-第一课-了解-SQL)
+- [第二课 检索数据](#user-content-第二课-检索数据)
+- [第三课 排序检索数据](#user-content-第三课-排序检索数据)
+- [第四课 过滤数据](#user-content-第四课-过滤数据)
+- [第五课 高级数据过滤](#user-content-第五课-高级数据过滤)
+- [第六课 使用通配符进行过滤](#user-content-第六课-使用通配符进行过滤)
+- [第七课 创建计算字段](#user-content-第七课-创建计算字段)
+- [第八课 使用函数处理数据](#user-content-第八课-使用函数处理数据)
+- [第九课 汇总数据](#user-content-第九课-汇总数据)
+- [第十课 分组数据](#user-content-第十课-分组数据)
+- [第十一课 使用子查询](#user-content-第十一课-使用子查询)
 
 ## 第一课 了解 SQL
 
