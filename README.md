@@ -437,5 +437,14 @@ WHERE order_num IN (SELECT order_num
 -- SELECT 语句中，子查询总是从内向外处理。在处理上面的 SELECT 语句时，DBMS 实际上是执行了两个操作。
 -- 注意：只能是单列
 -- 作为子查询的 SELECT 语句只能查询单个列。企图检索多个列将返回错误。
+
+-- 作为计算字段使用子查询
+SELECT cust_name, cust_state,
+       (SELECT COUNT(*)
+        FROM Orders
+        WHERE Orders.cust_id = Customers.cust_id) AS orders
+FROM Customers
+ORDER BY cust_name;
+-- 使用完全限定名(如 Orders.cust_id)来消除歧义。
 ```
 
