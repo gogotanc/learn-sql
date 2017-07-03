@@ -409,3 +409,33 @@ ORDER BY items, order_num;
 | GROUP BY | 分组说明      | 仅在按组计算聚集时使用 |
 | HAVING   | 组级过滤      | 否           |
 | ORDER BY | 输出排序顺序    | 否           |
+
+## 第十一课 使用子查询
+
+**查询（query）**
+
+任何 SQL 语句都是查询。但此术语一般指 SELECT 语句。
+
+MYSQL 是 4.1 版本引入子查询。
+
+```sql
+-- 使用子查询进行过滤
+SELECT order_num
+FROM OrderItems
+WHERE prod_id = 'RGAN01';
+
+SELECT cust_id
+FROM Orders
+WHERE order_num IN (20007, 20008);
+
+-- 上面两句使用子查询
+SELECT cust_id
+FROM Orders
+WHERE order_num IN (SELECT order_num
+                    FROM OrderItems
+                    WHERE prod_id = 'RGAN01');
+-- SELECT 语句中，子查询总是从内向外处理。在处理上面的 SELECT 语句时，DBMS 实际上是执行了两个操作。
+-- 注意：只能是单列
+-- 作为子查询的 SELECT 语句只能查询单个列。企图检索多个列将返回错误。
+```
+
