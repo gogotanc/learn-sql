@@ -4,7 +4,7 @@
 
 最近在看[这本书](https://book.douban.com/subject/24250054/)，这个仓库用来存放笔记。
 
-具体使用的 DBMS 为 MYSQL，其他的先不关注，结构和数据放在 [create.sql](https://github.com/gogotanc/learn-sql/blob/master/create.sql) 和 [populate.sql](https://github.com/gogotanc/learn-sql/blob/master/populate.sql)。
+具体使用的 DBMS 为 MYSQL，结构和数据放在 [create.sql](https://github.com/gogotanc/learn-sql/blob/master/create.sql) 和 [populate.sql](https://github.com/gogotanc/learn-sql/blob/master/populate.sql)。
 
 ## 目录
 
@@ -26,6 +26,8 @@
 - [第十六课 更新和删除数据](#user-content-第十六课-更新和删除数据)
 - [第十七课 创建和操纵表](#user-content-第十七课-创建和操纵表)
 - [第十八课 使用视图](#user-content-第十八课-使用视图)
+- [第十九课 使用存储过程](#user-content-第十九课-使用存储过程)
+- [第二十课 管理事物处理](#user-content-第二十课-管理事物处理)
 
 ## 第一课 了解 SQL
 
@@ -727,7 +729,7 @@ CREATE TABLE Users
 );
 -- 使用 DEFAULT 而不是 NULL
 
---更新表
+-- 更新表
 -- 增加行
 ALTER TABLE Users
 ADD address varchar(255) NOT NULL DEFAULT 'uestc';
@@ -786,5 +788,70 @@ WHERE order_num = 20008;
 -- 保护数据
 -- 更改数据格式和表示
 -- 性能问题，视图中不包含数据，每次使用时，都必须处理查询执行时需要的所有检索
+```
+
+## 第十九课 使用存储过程
+
+简单来说，存储过程就是为以后使用而保存的一条或者多条 SQL 语句。
+
+```sql
+-- 三个主要的好处：简单、安全、高性能
+-- MYSQL 5 开始支持存储过程
+
+-- 显示所有用户的列子
+DELIMITER //
+CREATE PROCEDURE ShowCustomers()
+BEGIN
+  SELECT * FROM Customers;
+END//
+DELIMITER ;
+
+CALL ShowCustomers(); 
+```
+
+## 第二十课 管理事物处理
+
+**事物处理（transaction processing）**
+
+使用事物处理，通过确保成批的 SQL 操作要么完全执行，要么完全不执行，来维护数据库的完整性。
+
+**事物（transaction）**
+
+指一组 SQL 语句。
+
+**回退（rollback）**
+
+指撤销指定 SQL 语句的过程。
+
+**提交（commit）**
+
+指将未存储的 SQL 语句结果写入数据库表。
+
+**保留点（savepoint）**
+
+指事物处理中设置的临时占位符（placeholder），可以对它发布回退。
+
+```sql
+-- 控制事物处理
+-- MYSQL 中如下操作
+START TRANSACTION
+...
+
+-- 使用 ROLLBACK
+START TRANSACTION
+DELETE FROM Users
+ROLLBACK;
+
+-- 使用 COMMIT
+START TRANSACTION
+DELETE FROM Users
+COMMIT;
+
+-- 使用保留点
+SAVEPOINT delete1;
+
+ROLLBACK TO delete1;
+
+-- 保留点越多越好，越能够灵活的进行回退。
 ```
 
