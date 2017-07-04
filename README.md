@@ -20,6 +20,8 @@
 - [第十课 分组数据](#user-content-第十课-分组数据)
 - [第十一课 使用子查询](#user-content-第十一课-使用子查询)
 - [第十二课 联结表](#user-content-第十二课-联结表)
+- [第十三课 创建高级联结](#user-content-第十三课-创建高级联结)
+- [第十四课 组合查询](#user-content-第十四课-组合查询)
 
 ## 第一课 了解 SQL
 
@@ -563,5 +565,45 @@ SELECT C.cust_id, COUNT(O.order_num) AS num_ord
 FROM Customers AS C LEFT OUTER JOIN Orders AS O
 ON C.cust_id = O.cust_id
 GROUP BY C.cust_id;
+```
+
+## 第十四课 组合查询
+
+本课讲述如何利用 UNION 操作符将多条 SELECT 语句组合成一个结果集。
+
+```sql
+-- 创建组合查询
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_state IN ('IL', 'IN', 'MI')
+UNION
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_name = 'Fun4All';
+-- UNION 默认去掉重复行
+-- UNION 规则
+-- UNION 必须由两条或者两条以上的 SELECT 语句组成，语句之间使用 UNION 分隔
+-- UNION 中的每个查询必须包含相同的列、表达式或聚集函数(顺序可不同)
+-- 列数据类型必须兼容：类型不必完全相同，但必须是 DBMS 可以隐含转换的类型
+
+-- 包含重复行 UNION ALL
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_state IN ('IL', 'IN', 'MI')
+UNION ALL
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_name = 'Fun4All';
+
+-- 对组合查询结果排序
+-- 只能使用一条 ORDER BY 子句，放在最后面，不存在只对一个 SELECT 子句排序的情况
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_state IN ('IL', 'IN', 'MI')
+UNION ALL
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_name = 'Fun4All'
+ORDER BY cust_name, cust_contact;
 ```
 
