@@ -25,6 +25,7 @@
 - [第十五课 插入数据](#user-content-第十五课-插入数据)
 - [第十六课 更新和删除数据](#user-content-第十六课-更新和删除数据)
 - [第十七课 创建和操纵表](#user-content-第十七课-创建和操纵表)
+- [第十八课 使用视图](#user-content-第十八课-使用视图)
 
 ## 第一课 了解 SQL
 
@@ -737,5 +738,53 @@ DROP COLUMN address;
 
 -- 删除表
 DROP TABLE Users;
+```
+
+## 第十八课 使用视图
+
+**视图（view）**
+
+视图是虚拟的表。
+
+```sql
+-- 创建视图
+CREATE VIEW ProductCustomers AS
+SELECT cust_name, cust_contact, prod_id
+FROM Customers, Orders, OrderItems
+WHERE Customers.cust_id = Orders.cust_id
+AND OrderItems.order_num = Orders.order_num;
+
+-- 删除视图
+DROP VIEW ProductCustomers;
+
+-- 使用视图
+SELECT cust_name, cust_contact
+FROM ProductCustomers
+WHERE prod_id = 'RGAN01';
+
+-- 使用视图过滤不想要的数据
+CREATE VIEW CustomerEmailList AS
+SELECT cust_id, cust_name, cust_email
+FROM Customers
+WHERE cust_email IS NOT NULL;
+
+SELECT cust_id, cust_name, cust_email
+FROM CustomerEmailList;
+
+-- 使用视图与计算字段
+CREATE VIEW OrderItemsExpanded AS
+SELECT order_num, prod_id, quantity, item_price, quantity * item_price AS expanded_price
+FROM OrderItems;
+
+SELECT *
+FROM OrderItemsExpanded
+WHERE order_num = 20008;
+
+-- 重用 SQL 语句
+-- 简化复杂的 SQL 操作
+-- 使用表的一部分而不是整个表
+-- 保护数据
+-- 更改数据格式和表示
+-- 性能问题，视图中不包含数据，每次使用时，都必须处理查询执行时需要的所有检索
 ```
 
