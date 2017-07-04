@@ -19,6 +19,7 @@
 - [第九课 汇总数据](#user-content-第九课-汇总数据)
 - [第十课 分组数据](#user-content-第十课-分组数据)
 - [第十一课 使用子查询](#user-content-第十一课-使用子查询)
+- [第十二课 联结表](#user-content-第十二课-联结表)
 
 ## 第一课 了解 SQL
 
@@ -462,5 +463,41 @@ SELECT cust_name, cust_state,
 FROM Customers
 ORDER BY cust_name;
 -- 使用完全限定名(如 Orders.cust_id)来消除歧义。
+```
+
+## 第十二课 联结表
+
+**联结（join）**
+
+SQL 最强大的功能之一就是能在数据查询的执行中联结表。
+
+**可伸缩（scale）**
+
+能够适应不断增加的工作量而不失败。设计良好的数据库或者应用程序称为可伸缩性好。
+
+**笛卡尔积（cartesian product）**
+
+由没有联结条件的表关系返回的结果为笛卡尔积。检索出的行的数目将是第一个表中的行数乘以第二个表中的行数。
+
+```sql
+-- 创建联结
+SELECT vend_name, prod_name, prod_price
+FROM Vendors, Products
+WHERE Vendors.vend_id = Products.vend_id;
+-- 没有 WHERE 子句，结果返回笛卡尔积的联结，也称为叉联结(cross join)
+
+-- 内联结
+-- 上面使用的联结称为等值联结(equijoin)，也称为内联结(inner join)
+SELECT vend_name, prod_name, prod_price
+FROM Vendors INNER JOIN Products
+ON Vendors.vend_id = Products.vend_id;
+
+-- 联结多个表
+SELECT prod_name, vend_name, prod_price, quantity
+FROM OrderItems, Products, Vendors
+WHERE Products.vend_id = Vendors.vend_id
+AND OrderItems.prod_id = Products.prod_id
+AND order_num = 20007;
+-- 联结表越多，性能下降越厉害
 ```
 
