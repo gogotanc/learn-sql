@@ -22,6 +22,7 @@
 - [第十二课 联结表](#user-content-第十二课-联结表)
 - [第十三课 创建高级联结](#user-content-第十三课-创建高级联结)
 - [第十四课 组合查询](#user-content-第十四课-组合查询)
+- [第十五课 插入数据](#user-content-第十五课-插入数据)
 
 ## 第一课 了解 SQL
 
@@ -605,5 +606,72 @@ SELECT cust_name, cust_contact, cust_email
 FROM Customers
 WHERE cust_name = 'Fun4All'
 ORDER BY cust_name, cust_contact;
+```
+
+## 第十五课 插入数据
+
+讲述如何利用 SQL 的 INSERT 语句将数据插入表中。
+
+```sql
+-- 插入完整的行
+INSERT INTO Customers
+VALUES('1000000006',
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111',
+       'USA',
+       NULL,
+       NULL);
+-- 依赖列次序
+
+-- 下面这种写法更安全
+INSERT INTO Customers(cust_id,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip,
+                      cust_country,
+                      cust_contact,
+                      cust_email)
+VALUES('1000000006',
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111',
+       'USA',
+       NULL,
+       NULL);
+-- 顺序可以改变，只要对应的值正确
+-- 使用这种写法可以插入部分行
+
+-- 插入检索出的数据
+INSERT INTO Customers(cust_id,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip,
+                      cust_country,
+                      cust_contact,
+                      cust_email)
+SELECT cust_id,
+       cust_name,
+       cust_address,
+       cust_city,
+       cust_state,
+       cust_zip,
+       cust_country,
+       cust_contact,
+       cust_email
+FROM CustCopy
+WHERE CustCopy.cust_id = 1000000006;
+
+-- MYSQL 不支持 SELECT INTO，使用下面的语句实现表的复制
+CREATE TABLE CustCopy AS 
+SELECT * FROM Customers;
 ```
 
