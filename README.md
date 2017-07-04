@@ -501,3 +501,67 @@ AND order_num = 20007;
 -- 联结表越多，性能下降越厉害
 ```
 
+## 第十三课 创建高级联结
+
+本课讲解另外一些联结。
+
+```sql
+-- 使用表别名
+SELECT prod_name, vend_name, prod_price, quantity
+FROM OrderItems AS O, Products AS P, Vendors AS V
+WHERE P.vend_id = V.vend_id
+AND O.prod_id = P.prod_id
+AND order_num = 20007;
+-- MYSQL 中 AS 可以省略掉，建议还是写上。
+
+-- 使用不同类型的联结
+-- 自联结
+SELECT cust_id, cust_name, cust_contact
+FROM Customers
+WHERE cust_name = (SELECT cust_name
+                   FROM Customers
+                   WHERE cust_contact = 'Jim Jones');
+
+-- 上面的语句可以使用自联结改写
+SELECT c1.cust_id, c1.cust_name, c1.cust_contact
+FROM Customers AS c1, Customers AS c2
+WHERE c1.cust_name = c2.cust_name
+AND c2.cust_contact = 'Jim Jones';
+-- c1, c2 都是 Customers 表，使用别名区别
+-- 用自联结而不用子查询
+
+-- 自然联结
+SELECT C.*, O.order_num, O.order_date, OI.prod_id, OI.quantity, OI.item_price
+FROM Customers AS C, Orders AS O, OrderItems AS OI
+WHERE C.cust_id = O.cust_id
+AND OI.order_num = O.order_num
+AND prod_id = 'RGAN01';
+
+-- 外联结
+SELECT Customers.cust_id, Orders.order_num
+FROM Customers INNER JOIN Orders
+ON Customers.cust_id = Orders.cust_id;
+-- 内联结，返回结果不包括没有订单的顾客
+
+-- 使用左外联结
+SELECT C.cust_id, O.order_num
+FROM Customers AS C LEFT OUTER JOIN Orders AS O
+ON C.cust_id = O.cust_id;
+-- 返回结果包括了没有订单的顾客
+
+-- 使用右外联结
+SELECT C.cust_id, O.order_num
+FROM Customers AS C RIGHT OUTER JOIN Orders AS O
+ON C.cust_id = O.cust_id;
+-- 返回结果包括了所有订单
+
+-- 两种外联结可以互换使用，调整 FROM 和 WHERE 子句中表的顺序即可
+-- MYSQL 不支持 FULL OUTER JOIN
+
+-- 使用带聚集函数的联结
+SELECT C.cust_id, COUNT(O.order_num) AS num_ord
+FROM Customers AS C LEFT OUTER JOIN Orders AS O
+ON C.cust_id = O.cust_id
+GROUP BY C.cust_id;
+```
+
