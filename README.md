@@ -4,7 +4,7 @@
 
 最近在看[这本书](https://book.douban.com/subject/24250054/)，这个仓库用来存放笔记。
 
-具体使用的 DBMS 为 MYSQL，结构和数据放在 [create.sql](https://github.com/gogotanc/learn-sql/blob/master/create.sql) 和 [populate.sql](https://github.com/gogotanc/learn-sql/blob/master/populate.sql)。
+具体使用的 DBMS 为 MYSQL 5.6.34，结构和数据放在 [create.sql](https://github.com/gogotanc/learn-sql/blob/master/create.sql) 和 [populate.sql](https://github.com/gogotanc/learn-sql/blob/master/populate.sql)。
 
 ## 目录
 
@@ -802,15 +802,28 @@ WHERE order_num = 20008;
 -- 三个主要的好处：简单、安全、高性能
 -- MYSQL 5 开始支持存储过程
 
--- 显示所有用户的列子
-DELIMITER //
-CREATE PROCEDURE ShowCustomers()
+-- 创建一个求和的存储过程
+DROP PROCEDURE IF EXISTS `my_add`;
+DELIMITER ;;
+CREATE PROCEDURE `my_add`(IN a int, IN b int, OUT sum int)
 BEGIN
-  SELECT * FROM Customers;
-END//
+    if a is null then set a = 0; 
+    end if;
+  
+    if b is null then set b = 0;
+    end if;
+
+    set sum  = a + b;
+END
+;;
 DELIMITER ;
 
-CALL ShowCustomers(); 
+-- 调用存储过程
+CALL my_add(2, 4, @c);
+
+SELECT @c;
+
+-- 一般存储过程适用于个别对性能要求较高的业务，其它的必要性不是很大
 ```
 
 ## 第二十课 管理事物处理
@@ -837,24 +850,39 @@ CALL ShowCustomers();
 
 ```sql
 -- 控制事物处理
--- MYSQL 中如下操作
-START TRANSACTION
-...
-
--- 使用 ROLLBACK
-START TRANSACTION
-DELETE FROM Users
-ROLLBACK;
-
--- 使用 COMMIT
-START TRANSACTION
-DELETE FROM Users
+-- MYSQL 的 InnoDB 支持事物，可进行如下操作
+-- 关闭自动提交
+SET autocommit = 0; 
+-- 开始事物
+BEGIN;
+UPDATE Users SET user_name ='tanc' WHERE user_id = 1;
+-- 提交事物
 COMMIT;
 
--- 使用保留点
-SAVEPOINT delete1;
+------------------------------
 
-ROLLBACK TO delete1;
+-- 回滚事物示例
+-- 关闭自动提交
+SET autocommit = 0; 
+-- 开始事物
+BEGIN;
+UPDATE Users SET user_name ='tanc' WHERE user_id = 1;
+-- 回滚事物
+ROLLBACK;
+
+------------------------------
+
+-- 保留点示例
+-- 关闭自动提交
+SET autocommit = 0; 
+-- 开始事物
+BEGIN;
+UPDATE Users SET user_name ='tanc' WHERE user_id = 1;
+SAVEPOINT update01;
+UPDATE Users SET user_name = 'molly' WHERE user_id = 1;
+-- 回滚事物
+ROLLBACK TO update01;
+COMMIT;
 
 -- 保留点越多越好，越能够灵活的进行回退。
 ```
@@ -865,7 +893,7 @@ ROLLBACK TO delete1;
 
 SQL 查询所检索出的结果。
 
-游标（sursor）
+**游标（sursor）**
 
 是一个存储在 DBMS 服务器上的数据库查询，它不是一条 SELECT 语句，而是被该语句检索出来的结果集。
 
@@ -875,19 +903,35 @@ SQL 查询所检索出的结果。
 -- MYSQL 5 已经支持
 -- 不适合 Web 应用，因为应用服务器是数据库的客户端而不是最终用户，通常 Web 开发人员按需自己开发相应功能
 
--- 创建游标
-DECLARE CustCursor CURSOR
-FOR
-SELECT * FROM Customers
-WHERE cust_email IS NULL
-
--- 使用游标
-OPEN CURSOR CustCursor
-
--- 关闭游标
-CLOSE CURSOR
-
-
+-- 创建一个存储过程，使用游标计算 Users 表中行数
+DELIMITER //  
+DROP PROCEDURE IF EXISTS count_num;
+CREATE PROCEDURE count_num()
+BEGIN
+    DECLARE c int;  
+    DECLARE n varchar(20);  
+    DECLARE total int default 0;  
+    DECLARE done int default false;
+    -- 创建游标
+    DECLARE cur CURSOR FOR SELECT user_name, user_id FROM Users;
+    DECLARE continue HANDLER for not found set done = true;
+    SET total = 0;
+    -- 打开游标
+    OPEN cur;
+    read_loop:loop
+    -- 使用游标
+    FETCH cur INTO n,c;
+    if done then
+        leave read_loop;
+    end if;
+    set total = total + c;
+    end loop;
+    -- 关闭游标
+    CLOSE cur;
+    SELECT total;
+END;
+-- 调用上面的存储过程
+CALL count_num();
 ```
 
 ## 第二十二课 高级特性
@@ -928,6 +972,13 @@ FOREIGN KEY (cust_id) REFERENCES Customers (cust_id);
 
 ```sql
 -- 唯一约束的语法类似于其他约束的语法。唯一约束既可以用 UNIQUE 关键字在表定义中定义，也可以用单独的 CONSTRAINT 定义。
+CREATE TABLE test
+(
+    id INT,
+    name VARCHAR(255),
+    PRIMARY KEY (id),
+    UNIQUE (name)
+);
 ```
 
 **检查约束**
@@ -962,6 +1013,15 @@ ON Products (prod_name);
 触发器是特殊的存储过程，它在特定的数据库活动发生时自动执行。
 
 ```sql
+-- 创建一个触发器，当 Users 插入一条数据的时候执行
+DROP TRIGGER IF EXISTS do_after_insert_test;
+CREATE TRIGGER do_after_insert_test
+AFTER INSERT ON Users
+FOR EACH ROW
+BEGIN
+    INSERT INTO test(id, name) VALUES(new.user_id, new.user_name);
+END
+
 -- 约束比触发器更快
 ```
 
