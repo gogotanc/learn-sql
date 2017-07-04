@@ -24,6 +24,7 @@
 - [第十四课 组合查询](#user-content-第十四课-组合查询)
 - [第十五课 插入数据](#user-content-第十五课-插入数据)
 - [第十六课 更新和删除数据](#user-content-第十六课-更新和删除数据)
+- [第十七课 创建和操纵表](#user-content-第十七课-创建和操纵表)
 
 ## 第一课 了解 SQL
 
@@ -692,5 +693,49 @@ DELETE FROM Customers
 WHERE cust_id = '1000000006';
 -- SQL 没有撤销功能，需小心使用 UPDATE 和 DELETE
 -- DELETE 操作的是表的内容而不是表
+```
+
+## 第十七课 创建和操纵表
+
+```sql
+-- 表创建基础
+-- 表名，列名和定义，
+CREATE TABLE Products
+(
+    prod_id    char(10)      NOT NULL ,
+    vend_id    char(10)      NOT NULL ,
+    prod_name  char(255)     NOT NULL ,
+    prod_price decimal(8,2)  NOT NULL ,
+    prod_desc  text          NULL
+);
+
+--  使用 NULL 值
+CREATE TABLE Orders
+(
+    order_num  int      NOT NULL ,
+    order_date datetime NOT NULL ,
+    cust_id    char(10) NOT NULL
+);
+
+-- 指定默认值
+CREATE TABLE Users
+(
+    user_id    int         NOT NULL ,
+    user_name  varchar(20) NOT NULL ,
+    user_desc  varchar(20) NOT NULL    DEFAULT 'description'
+);
+-- 使用 DEFAULT 而不是 NULL
+
+--更新表
+-- 增加行
+ALTER TABLE Users
+ADD address varchar(255) NOT NULL DEFAULT 'uestc';
+
+-- 删除行
+ALTER TABLE Users
+DROP COLUMN address;
+
+-- 删除表
+DROP TABLE Users;
 ```
 
