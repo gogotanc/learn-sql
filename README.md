@@ -23,6 +23,7 @@
 - [第十三课 创建高级联结](#user-content-第十三课-创建高级联结)
 - [第十四课 组合查询](#user-content-第十四课-组合查询)
 - [第十五课 插入数据](#user-content-第十五课-插入数据)
+- [第十六课 更新和删除数据](#user-content-第十六课-更新和删除数据)
 
 ## 第一课 了解 SQL
 
@@ -673,5 +674,23 @@ WHERE CustCopy.cust_id = 1000000006;
 -- MYSQL 不支持 SELECT INTO，使用下面的语句实现表的复制
 CREATE TABLE CustCopy AS 
 SELECT * FROM Customers;
+```
+
+## 第十六课 更新和删除数据
+
+介绍如何利用 UPDATE 和 DELETE 语句进一步操作表数据。
+
+```sql
+-- 更新数据
+UPDATE Customers
+SET cust_email = 'kim@thetoystore.com'
+WHERE cust_id = '1000000005';
+-- 不要省略 WHERE 子句，否则会更新所有行
+
+-- 删除数据
+DELETE FROM Customers
+WHERE cust_id = '1000000006';
+-- SQL 没有撤销功能，需小心使用 UPDATE 和 DELETE
+-- DELETE 操作的是表的内容而不是表
 ```
 
